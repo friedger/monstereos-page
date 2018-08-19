@@ -113,8 +113,8 @@ body {font-family: "Raleway", Arial, sans-serif}
                 deathDetails = "</br>"
                 if (monster.death_at != 0) {
                     deathDetails += "died more than " +  timeAgo.format(now - monster.death_at) 
+                    document.getElementById("title").innerHTML = "RIP " + monster.name
                 }
-                console.log(monster)
                 document.getElementById("details").innerHTML = "owned by " + monster.owner 
                     + deathDetails
                     + "</br>last fed " + timeAgo.format(now - monster.last_fed_at)
