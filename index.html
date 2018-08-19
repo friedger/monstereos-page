@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<title>Monstereosio Details</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet" type="text/css">
+<style>
+body {font-family: "Raleway", Arial, sans-serif}
+.w3-row img {margin-bottom: -8px}
+</style>
+<script>
+    function getAnchor() {
+        return (document.URL.split('#').length > 1) ? document.URL.split('#')[1] : null;
+    }
+</script>
+<body>
+
+<!-- !PAGE CONTENT! -->
+<div class="w3-content" style="max-width:1500px">
+
+  <!-- Header -->
+  <header class="w3-container w3-xlarge w3-padding-24">
+    <p id="title" class="w3-left">Monster</p>
+  </header>
+
+  <!-- Monster details -->
+  <div class="w3-row">
+    <h2></h2>
+    <img src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" class="w3-image w3-padding-32" width="300" height="300">
+
+    <p id="details"></p>
+    <p id="status" class="w3-large w3-text-pink"></p>
+    
+  </div>
+  
+<!-- End Page Content -->
+</div>
+
+<!-- Footer / About Section -->
+<footer class="w3-light-grey w3-padding-64 w3-center" id="about">
+    Provided by friedgermuef
+  <br>
+  <p>Powered by <a href="https://www.w3schools.com/w3css/default.asp" target="_blank" class="w3-hover-text-green">w3.css</a></p>
+</footer>
+
+<script>
+    
+</script>
+
+<!--
+  sha512-oiuFmDyPAiD3PIiAYLyie70WmRWBy+Eq1Xar8Siz2HDGAv8B6O9tcjW9lC9isYbS/TOs4OkZAsQBln206Mb9Wg== lib/eos-api.js
+  sha512-LLDsX/GdVZYA82k9TVz3zUxSjvaX8s5b1FJm64W51JGxLFKI2z+ljqYQtsUZIOxh9pSUqvLA5HCoxXqdRxusKw== lib/eos-api.min.js
+  sha512-UuHPS649Xw5vATdmB0X7z+jgbdfmxiaeraqNtvq9T6bG1k8NX9Az8YrT4GmX5gBpbIX+z3vOomFnBX1RmnDDTA== lib/eos-api.min.js.map
+  -->
+  <script src="https://cdn.jsdelivr.net/npm/eosjs-api@7.0.3/lib/eos-api.min.js"
+    integrity="sha512-LLDsX/GdVZYA82k9TVz3zUxSjvaX8s5b1FJm64W51JGxLFKI2z+ljqYQtsUZIOxh9pSUqvLA5HCoxXqdRxusKw=="
+    crossorigin="anonymous"></script>
+
+    <script src="dist/timeago.min.js" type="text/javascript"></script>
+
+    <script>
+    /** Transactions are only valid on the selected chain. */
+    chain = {
+      main: 'aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906', // main network
+      jungle: '038f4b0fc8ff18a4f0842a8f0564611f6e96e8535901dd45e43ac8691a1c4dca', // jungle testnet
+      sys: 'cf057bbfb72640471fd910bcb67639c22df9f92470936cddc1ade0e2f2e7dc4f' // local developer
+    }
+  
+    options = {
+        httpEndpoint: 'https://eu1.eosdac.io:443', // default, null for cold-storage
+        verbose: false, // API logging
+        logger: { // Default logging functions
+            log: true ? console.log : null,
+            error: true ? console.error : null
+        },
+        fetchConfiguration: {}
+    }
+
+    /**
+      Other httpEndpoint's: https://www.eosdocs.io/resources/apiendpoints
+    */
+    eos = EosApi(options);
+    
+    // Create relative date/time formatter.
+    const timeAgo = timeago();
+
+    const monsterId = parseInt(getAnchor());
+    console.log("monsterId " + monsterId)
+    eos.getTableRows(true, "monstereosio", "monstereosio", "pets", "", monsterId, -1, 1, "i64", 1)
+        .then(function(result) {            
+                        
+            if (result.rows.length == 0 || result.rows[0].id != monsterId) {
+                document.getElementById("title").innerHTML = "This monster does not exist!" 
+            } else {
+                monster = result.rows[0]
+                // load image
+                var image = document.images[0];
+                var downloadingImage = new Image();
+                downloadingImage.onload = function(){
+                    image.src = this.src;   
+                };
+                url = "http://monstereos.io/images/monsters/monster-"+ monster.type +".png";
+                downloadingImage.src = url;
+
+                //set name        
+                document.getElementById("title").innerHTML = monster.name 
+                document.title = "Monstereosio Details - " + monster.name
+                
+                now = new Date().getTime();
+
+                // set details
+                deathDetails = "</br>"
+                if (monster.death_at != 0) {
+                    deathDetails += "died more than " +  timeAgo.format(now - monster.death_at) 
+                }
+                console.log(monster)
+                document.getElementById("details").innerHTML = "owned by " + monster.owner 
+                    + deathDetails
+                    + "</br>last fed " + timeAgo.format(now - monster.last_fed_at)
+            }
+        })
+  </script>
+</body>
+</html>
